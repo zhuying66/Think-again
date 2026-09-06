@@ -11,3 +11,6 @@ captures/
 *.iml
 .vscode/
 .DS_Store
+
+# 本地验证产物
+_verify/
