@@ -1,5 +1,8 @@
 package com.zhuying.zaikaolv.ui.screens.settings
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +41,9 @@ import com.zhuying.zaikaolv.ui.theme.GreenPrimary
 import com.zhuying.zaikaolv.ui.theme.MoonDark
 import com.zhuying.zaikaolv.ui.components.ResponsiveScreen
 
+/** 项目开源仓库地址(设置页「关于」卡片直达) */
+private const val GITHUB_REPO_URL = "https://github.com/zhuying66/Think-again"
+
 @Composable
 fun SettingsScreen(
     container: AppContainer,
@@ -45,6 +52,7 @@ fun SettingsScreen(
     val themeMode by vm.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
     val isSystem = themeMode == ThemeMode.SYSTEM
     var showClearConfirm by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         ResponsiveScreen { spec ->
@@ -53,7 +61,7 @@ fun SettingsScreen(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .weight(1f)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = spec.hPad),
                 ) {
@@ -136,6 +144,17 @@ fun SettingsScreen(
                         subtitle = "清空全部历史记录,不可恢复",
                         rightText = null,
                         onClick = { showClearConfirm = true },
+                        spec = spec,
+                    )
+
+                    Spacer(Modifier.height(spec.gap))
+                    // 关于:直达 GitHub 仓库
+                    SectionTitle("关于")
+                    CardRow(
+                        title = "GitHub 仓库",
+                        subtitle = "zhuying66/Think-again · 查看源码与更新",
+                        showArrow = true,
+                        onClick = { openUrl(context, GITHUB_REPO_URL) },
                         spec = spec,
                     )
                     Spacer(Modifier.height(spec.vPad * 2f))
@@ -239,12 +258,13 @@ private fun ModeRow(
     }
 }
 
-/** 设置页统一风格的卡片行(可点击)。 */
+/** 设置页统一风格的卡片行(可点击)。showArrow 为 true 时右侧显示「›」表示会跳转。 */
 @Composable
 private fun CardRow(
     title: String,
     subtitle: String? = null,
     rightText: String? = null,
+    showArrow: Boolean = false,
     onClick: () -> Unit,
     spec: com.zhuying.zaikaolv.ui.components.ResponsiveSpec,
 ) {
@@ -266,7 +286,22 @@ private fun CardRow(
         if (rightText != null) {
             Text(rightText, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+        if (showArrow) {
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = "›",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
+}
+
+/** 用系统默认方式打开链接:已安装 GitHub 客户端则由它接管,否则用浏览器。 */
+private fun openUrl(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    runCatching { context.startActivity(intent) }
 }
 
 /** 字节 → 可读大小(B/KB/MB)。 */

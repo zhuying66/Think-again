@@ -18,8 +18,8 @@ android {
         //   · 更换/改动 APP 内容 → 第二位 +1
         //   · 大版本更新        → 第一位 +1
         // versionCode 按 X*10000 + Y*100 + Z 计算,保证每加一版都递增、可覆盖安装
-        versionCode = 10201   // 1.2.1
-        versionName = "1.2.1"
+        versionCode = 10401   // 1.4.1
+        versionName = "1.4.1"
     }
 
     signingConfigs {
