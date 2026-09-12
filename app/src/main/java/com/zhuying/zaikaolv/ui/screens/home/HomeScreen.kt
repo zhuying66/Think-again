@@ -35,7 +35,7 @@ fun HomeScreen(
             Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .weight(1f)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = spec.hPad),
                     horizontalAlignment = Alignment.CenterHorizontally,

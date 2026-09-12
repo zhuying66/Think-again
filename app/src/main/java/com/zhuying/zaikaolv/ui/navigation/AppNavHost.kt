@@ -1,6 +1,8 @@
 package com.zhuying.zaikaolv.ui.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -50,6 +52,9 @@ fun ZaikaolvRoot(container: AppContainer) {
     val showBottomBar = route == ROUTE_HOME || route == ROUTE_RECORD || route == ROUTE_SETTINGS
 
     Scaffold(
+        // 各页面自行处理状态栏内边距(statusBarsPadding),这里不再重复注入系统栏内边距,
+        // 只保留底部导航栏本身占用的高度。
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
@@ -83,7 +88,11 @@ fun ZaikaolvRoot(container: AppContainer) {
         NavHost(
             navController = navController,
             startDestination = ROUTE_HOME,
-            modifier = Modifier.fillMaxSize(),
+            // 必须消费 Scaffold 的内边距:否则底部导航栏会盖住页面最后一段内容,
+            // 导致设置页等页面「滑不到最底下」。
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
         ) {
             composable(ROUTE_HOME) {
                 HomeScreen(

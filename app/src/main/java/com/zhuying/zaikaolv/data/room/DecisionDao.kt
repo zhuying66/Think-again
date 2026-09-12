@@ -21,6 +21,14 @@ interface DecisionDao {
     @Delete
     suspend fun delete(record: DecisionRecordEntity)
 
+    /** 修改单条记录的名称(用户自定义) */
+    @Query("UPDATE decision_records SET title = :title WHERE id = :id")
+    suspend fun updateTitle(id: Long, title: String?)
+
+    /** 删除单条记录 */
+    @Query("DELETE FROM decision_records WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
     @Query("DELETE FROM decision_records")
     suspend fun clear()
 }
