@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.zhuying.zaikaolv.AppContainer
 import com.zhuying.zaikaolv.data.model.QuestionMode
+import com.zhuying.zaikaolv.ui.screens.classify.ClassifyScreen
 import com.zhuying.zaikaolv.ui.screens.home.HomeScreen
 import com.zhuying.zaikaolv.ui.screens.quiz.QuizScreen
 import com.zhuying.zaikaolv.ui.screens.record.RecordScreen
@@ -33,6 +34,7 @@ import com.zhuying.zaikaolv.ui.screens.settings.SettingsScreen
 private const val ROUTE_HOME = "home"
 private const val ROUTE_RECORD = "record"
 private const val ROUTE_SETTINGS = "settings"
+private const val ROUTE_CLASSIFY = "classify"
 private const val ROUTE_QUIZ = "quiz/{mode}"
 private const val ROUTE_RESULT = "result/{mode}/{answers}"
 
@@ -86,6 +88,19 @@ fun ZaikaolvRoot(container: AppContainer) {
             composable(ROUTE_HOME) {
                 HomeScreen(
                     onStart = { mode -> navController.navigate(quizRoute(mode)) },
+                    onStartClassify = { navController.navigate(ROUTE_CLASSIFY) },
+                )
+            }
+            // 分类前置步骤:答完 5 道规模判断题后自动进入对应问卷
+            composable(ROUTE_CLASSIFY) {
+                ClassifyScreen(
+                    onExit = { navController.popBackStack() },
+                    onClassified = { mode ->
+                        navController.navigate(quizRoute(mode)) {
+                            // 分类已完成,返回键直接回首页而不是回到分类问答
+                            popUpTo(ROUTE_HOME)
+                        }
+                    },
                 )
             }
             composable(

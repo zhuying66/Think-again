@@ -28,6 +28,7 @@ import com.zhuying.zaikaolv.ui.theme.Blue
 @Composable
 fun HomeScreen(
     onStart: (QuestionMode) -> Unit,
+    onStartClassify: () -> Unit,
 ) {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         ResponsiveScreen { spec ->
@@ -55,8 +56,16 @@ fun HomeScreen(
                     )
 
                     Spacer(Modifier.height(spec.gap * 1.8f))
+
+                    // 主入口:自动判断问题规模(本地问答 + 后台评分,不接入 AI)
+                    ClassifyEntryCard(
+                        tint = Color(0xFF4CAF50),
+                        onClick = onStartClassify,
+                    )
+
+                    Spacer(Modifier.height(spec.gap * 1.6f))
                     Text(
-                        text = "先选择这个问题的大小",
+                        text = "或者，自己选择问题的大小",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
@@ -82,6 +91,56 @@ fun HomeScreen(
                     Spacer(Modifier.height(spec.vPad * 2f))
                 }
             }
+        }
+    }
+}
+
+/** 首页主入口:自动判断问题规模。 */
+@Composable
+private fun ClassifyEntryCard(
+    tint: Color,
+    onClick: () -> Unit,
+) {
+    Surface(
+        color = tint.copy(alpha = 0.12f),
+        shape = RoundedCornerShape(18.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .clip(CircleShape)
+                    .background(tint.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text("🧭", style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "先判断这件事有多重要",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    text = "回答 5 个问题，自动选择适合的分析方式",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }
